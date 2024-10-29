@@ -10,14 +10,19 @@ using System.Windows.Forms;
 
 namespace HotelReservation
 {
-    public partial class Form1 : Form
+    public partial class Reservation_User : Form
     {
-        public Form1()
+        public Reservation_User()
         {
             InitializeComponent();
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lbl_admin_Click(object sender, EventArgs e)
         {
 
         }
