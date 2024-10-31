@@ -1,0 +1,63 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\toprn\\source\\repos\\HotelReservation\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|HotelReservation||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F9B1B9C8-9DAA-4AFA-862D-AAED5F2DEDE3}|HotelReservation\\HotelReservation.csproj|C:\\Users\\toprn\\source\\repos\\HotelReservation\\hotelreservation\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{F9B1B9C8-9DAA-4AFA-862D-AAED5F2DEDE3}|HotelReservation\\HotelReservation.csproj|solutionrelative:hotelreservation\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F9B1B9C8-9DAA-4AFA-862D-AAED5F2DEDE3}|HotelReservation\\HotelReservation.csproj|c:\\users\\toprn\\source\\repos\\hotelreservation\\hotelreservation\\||{B270807C-D8C6-49EB-8EBE-8E8D566637A1}|cc4014f5-b18d-439c-9352-f99d984cca85"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 190,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 162,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{74946827-37a0-11d2-a273-00c04f8ef4ff}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "App.config",
+              "DocumentMoniker": "C:\\Users\\toprn\\source\\repos\\HotelReservation\\HotelReservation\\App.config",
+              "RelativeDocumentMoniker": "HotelReservation\\App.config",
+              "ToolTip": "C:\\Users\\toprn\\source\\repos\\HotelReservation\\HotelReservation\\App.config",
+              "RelativeToolTip": "HotelReservation\\App.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2024-10-30T12:47:11.736Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "HotelReservation",
+              "DocumentMoniker": "C:\\Users\\toprn\\source\\repos\\HotelReservation\\HotelReservation\\HotelReservation.csproj",
+              "RelativeDocumentMoniker": "HotelReservation\\HotelReservation.csproj",
+              "ToolTip": "C:\\Users\\toprn\\source\\repos\\HotelReservation\\HotelReservation\\HotelReservation.csproj",
+              "RelativeToolTip": "HotelReservation\\HotelReservation.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-10-30T12:45:40.552Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
