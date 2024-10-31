@@ -18,7 +18,7 @@ namespace HotelReservation
             InitializeComponent();
         }
 
-        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\toprn\source\repos\HotelReservation\HotelReservation\HotelDB.mdf;Integrated Security=True");
+        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\HotelDB.mdf;Integrated Security=True");
 
         private void SignIn_Load(object sender, EventArgs e)
         {
@@ -32,11 +32,14 @@ namespace HotelReservation
             password = txtbox_password.Text;
 
                 bool isMatched = false;
-                String admin_query = "SELECT * FROM Users WHERE isAdmin = 1";
+
+            //ตรวจสอบว่ามี username ในระบบหรือไม่ และตรวจว่าเป็น admin หรือไม่
+            String admin_query = "SELECT * FROM Users WHERE isAdmin = 1";
                 SqlCommand command = new SqlCommand(admin_query, conn);
                 conn.Open();
                 using (SqlDataReader reader = command.ExecuteReader()) {
                     while (reader.Read()) {
+                        //ตรวจสอบว่า username และรหัสผ่านตรงกันหรือไม่
                         if (reader["username"].ToString() == username && reader["password"].ToString() == password) { 
                             isMatched = true;
                             break;

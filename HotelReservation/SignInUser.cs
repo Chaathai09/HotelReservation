@@ -24,7 +24,7 @@ namespace HotelReservation
             instance = this;
         }
 
-        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\toprn\source\repos\HotelReservation\HotelReservation\HotelDB.mdf;Integrated Security=True");
+        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\HotelDB.mdf;Integrated Security=True");
 
         private void btn_signup_Click(object sender, EventArgs e)
         {
@@ -47,6 +47,7 @@ namespace HotelReservation
             password = txtbox_password.Text;
 
             int matchedUser = 0;
+            //ตรวจสอบว่ามี username นี้ปรากฏในฐานข้อมูลหรือไม่ และตรวจสอบว่า ไม่ใช่ admin / และตรวจว่ารหัสผ่านกับ username ตรงกันหรือไม่
             String user_query = "SELECT COUNT(*) FROM Users WHERE username = '" + username + "' AND password = '" + password + "' AND isAdmin = 0";
             using (SqlCommand cmdCount = new SqlCommand(user_query, conn))
             {
@@ -55,6 +56,7 @@ namespace HotelReservation
             }
             conn.Close();
 
+            //ถ้าพบข้อมูล ให้เก็บข้อมูล userID เอาไว้ก่อนที่จะไปหน้าถัดไป เพื่อที่จะได้ตรวจสอบว่าใครทำการจองพักรายการข้อมูลนั้น
             if (matchedUser > 0)
             {
                 String current_user_query = "SELECT * FROM Users WHERE username = '" + username + "' AND password = '" + password + "' AND isAdmin = 0";
@@ -86,22 +88,5 @@ namespace HotelReservation
         {
 
         }
-
-        /*private void test_btn_Click(object sender, EventArgs e)
-        {
-            test_label.Text = "";
-
-            String admin_query = "SELECT * FROM Users";
-            SqlCommand command = new SqlCommand(admin_query, conn);
-            conn.Open();
-            using (SqlDataReader reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    test_label.Text += reader["username"].ToString() + " ";
-                }
-                conn.Close();
-            }
-        }*/
     }
 }

@@ -81,6 +81,7 @@
             this.btn_manual.TabIndex = 3;
             this.btn_manual.Text = "คู่มือการใช้งาน";
             this.btn_manual.UseVisualStyleBackColor = true;
+            this.btn_manual.Click += new System.EventHandler(this.btn_manual_Click);
             // 
             // label1
             // 

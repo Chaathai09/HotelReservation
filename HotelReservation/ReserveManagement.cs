@@ -20,6 +20,7 @@ namespace HotelReservation
             UpdatePanel();
         }
 
+        //ชุดข่อมูลชั่วคราวเพื่อเก็บชื่อจริง (ชื่อ + นามสกุล) ให้ match กับ userID โดยที่ไม่ต้องเรียกฐานข้อมูลหลายรอบ
         struct UserStruct
         {
             public UserStruct(int userID, string fullName)
@@ -33,7 +34,7 @@ namespace HotelReservation
         }
         List<UserStruct> users = new List<UserStruct>();
 
-        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\toprn\source\repos\HotelReservation\HotelReservation\HotelDB.mdf;Integrated Security=True");
+        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\HotelDB.mdf;Integrated Security=True");
 
         private void UpdatePanel()
         {
@@ -44,6 +45,7 @@ namespace HotelReservation
             InitializeUpdateBox();
         }
 
+        //กำหนดให้ dropdown ที่เลือก user สามารถดึงข้อมูลมาจากฐานข้อมูลมาใช้แสดงและเลือกได้
         private void InitializeUserComboBox()
         {
             users.Clear();
@@ -63,6 +65,8 @@ namespace HotelReservation
                 conn.Close();
             }
         }
+
+        //กำหนดให้ dropdown ที่เลือกห้อง สามารถดึงข้อมูลมาจากฐานข้อมูลมาใช้แสดงและเลือกได้
         private void InitializeRoomComboBox()
         {
             comboBox_room.Items.Clear();
@@ -79,6 +83,7 @@ namespace HotelReservation
             }
         }
 
+        //กำหนดให้ dropdown ที่เลือกรายการจองพัก สามารถดึงข้อมูลมาจากฐานข้อมูลมาใช้แสดงและเลือกได้
         private void InitializeReservationComboBox()
         {
             comboBox_reserveID.Items.Clear();
@@ -95,6 +100,7 @@ namespace HotelReservation
             }
         }
 
+        //กำหนดค่าในแต่ละ dropdown ในฟีทเจอร์การอัพเดทข้อมูล แต่ละ field จะดึงมาจากฐานข้อมูล 
         private void InitializeUpdateBox()
         {
             comboBox_update_reserveID.Items.Clear();
@@ -156,6 +162,8 @@ namespace HotelReservation
         {
             string startDate = datePicker_checkin.Value.ToShortDateString(); 
             string endDate = datePicker_checkout.Value.ToShortDateString();
+
+            //ตรวจสอบว่าห้องดังกล่าวมีข้อมูลซ้ำกันหรือไม่ เช่น ช่วงเวลาพักทับซ้อนกัน
             try
             {
                 String query = "SELECT * FROM Reservations WHERE reserveRoomID = '"+comboBox_room.SelectedItem.ToString() + "' AND startDate <= '" + startDate + "' AND endDate >= '" + endDate + "'";
@@ -174,6 +182,7 @@ namespace HotelReservation
                 MessageBox.Show("Error");;
             }
 
+            //เพิ่มข้อมูลโดยอิง userID ที่เก็บชั่วคราวเอาไว้ และเทียบกับ input ของผู้ใช้
             IReserveRepository repository = new ReservationRepository();
             bool result = await repository.Insert(new Reservation()
             {
@@ -192,8 +201,10 @@ namespace HotelReservation
             UpdatePanel();
         }
 
+        //ลบข้อมูลจากฐานข้อมูล
         private void btn_delete_Click(object sender, EventArgs e)
         {
+            //ตรวจสอบว่าได้เลือกข้อมูลที่จะลบหรือไม่
             if (comboBox_reserveID.SelectedItem == null)
             {
                 MessageBox.Show("กรุณาเลือกรายการจองพักก่อนที่จะทำการลบข้อมูล", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -202,6 +213,8 @@ namespace HotelReservation
 
             conn.Open();
             SqlCommand deleteCmd = conn.CreateCommand();
+
+            //ลบฐานข้อมูลที่มีรายการจองพักตรงกับที่เลือก
             deleteCmd.CommandText = "DELETE FROM Reservations WHERE reserveID = '"+comboBox_reserveID.SelectedItem.ToString()+"'";
             deleteCmd.ExecuteNonQuery();
             conn.Close();
@@ -209,8 +222,10 @@ namespace HotelReservation
             UpdatePanel();
         }
 
+        //อัพเดทข้อมูลของแต่ละรายการจองพัก
         private void btn_update_Click(object sender, EventArgs e)
         {
+            //ตรวจสอบว่าได้เลือกข้อมูลที่จะอัพเดทหรือไม่
             if (comboBox_update_reserveID.SelectedItem == null)
             {
                 MessageBox.Show("กรุณาเลือกรายการจองพักก่อนที่จะทำการอัพเดท", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -223,6 +238,7 @@ namespace HotelReservation
             string startDate = datePicker_update_checkin.Value.ToShortDateString();
             string endDate = datePicker_update_checkout.Value.ToShortDateString();
 
+            //ตรวจสอบว่าข้อมูลที่อัพเดทของแต่ละรายการจองพัก ทับซ้อนกับข้อมูลที่มีอยู่หรือไม่
             try
             {
                 String query = "SELECT * FROM Reservations WHERE reserveRoomID = '" + comboBox_room.SelectedItem.ToString() + "' AND startDate <= '" + startDate + "' AND endDate >= '" + endDate + "'";
@@ -243,6 +259,8 @@ namespace HotelReservation
 
             conn.Open();
             SqlCommand updateCmd = conn.CreateCommand();
+
+            //สั่งอัพเดทฐานข้อมูลตามข้อมูลที่รับเข้ามา
             updateCmd.CommandText = "UPDATE Reservations SET reserveUserID = @reserveUserID, reserveRoomID = @reserveRoomID, startDate = @startDate, endDate = @endDate WHERE reserveID = @reserveID";
             updateCmd.Parameters.AddWithValue("@reserveUserID", userID);
             updateCmd.Parameters.AddWithValue("@reserveRoomID", roomID);
@@ -255,12 +273,14 @@ namespace HotelReservation
             UpdatePanel();
         }
 
+        //แสดงข้อมูลที่เกี่ยวข้องกันในแต่ละรายการจองให้สอดคล้องกัน
         private void comboBox_update_reserveID_SelectedIndexChanged(object sender, EventArgs e)
         {
             int reserveID = Int32.Parse(comboBox_update_reserveID.SelectedItem.ToString());
             int currentUser = 0;
             int currentRoom = 0;
 
+            //ดึงข้อมูลอื่น ๆ ที่เป็น field เดียวกับรายการจองนั้นจากฐานข้อมูลและนำมาแสดงให้ตรงกัน
             String reserve_query = "SELECT * FROM Reservations WHERE reserveID = '"+reserveID+"'";
             SqlCommand command = new SqlCommand(reserve_query, conn);
             conn.Open();

@@ -19,7 +19,7 @@ namespace HotelReservation
             UpdatePanel();
         }
 
-        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\toprn\source\repos\HotelReservation\HotelReservation\HotelDB.mdf;Integrated Security=True");
+        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\HotelDB.mdf;Integrated Security=True");
 
 
         private void UpdatePanel()
@@ -43,6 +43,7 @@ namespace HotelReservation
             checkBox_admin.Checked = false;
         }
 
+        //นำข้อมูลจากฐานข้อมูล Users ให้มาแสดงและใช้งานผ่าน dropdown ได้
         private void InitializeUserDeleteComboBox()
         {
             comboBox_user.Items.Clear();
@@ -60,6 +61,7 @@ namespace HotelReservation
             }
         }
 
+        //นำข้อมูลจากฐานข้อมูล Users ให้มาแสดงและใช้งานผ่าน dropdown ของการอัพเดทได้
         private void InitializeUserUpdate()
         {
             comboBox_update_user.Items.Clear();
@@ -107,6 +109,7 @@ namespace HotelReservation
             this.Hide();
         }
 
+        //แสดงข้อมูลที่เกี่ยวข้องจาก user ที่เลือกให้ตรงกับข้อมูลในฐานข้อมูล
         private void comboBox_update_user_SelectedIndexChanged(object sender, EventArgs e)
         {
             string username = comboBox_update_user.SelectedItem.ToString();
@@ -119,6 +122,7 @@ namespace HotelReservation
             string address = "";
             bool isAdmin = false;
 
+            //เลือกข้อมูลจาก Users ที่มี username ตรงกับที่เลือก
             String user_query = "SELECT * FROM Users WHERE username = '" + username + "'";
             SqlCommand command = new SqlCommand(user_query, conn);
             conn.Open();
@@ -155,6 +159,7 @@ namespace HotelReservation
 
         private async void btn_insert_Click(object sender, EventArgs e)
         {
+            //ตรวจสอบว่ากรอกข้อมูลครบหรือไม่
             if (string.IsNullOrEmpty(txtbox_username.Text) ||
                 string.IsNullOrEmpty(txtbox_password.Text))
             {
@@ -163,6 +168,7 @@ namespace HotelReservation
                 return;
             }
 
+            //ตรวจสอบว่ามี username ที่ซ้ำกันหรือไม่
             try
             {
                 String query = "SELECT * FROM Users WHERE username = '" + txtbox_username.Text + "'";
@@ -181,6 +187,7 @@ namespace HotelReservation
                 MessageBox.Show("Error");
             }
 
+            //เพิ่มข้อมูลไปยัง database จาก input ที่กรอกเข้ามา
             IUserRepository repository = new UserRepository();
             bool result = await repository.Insert(new User()
             {
@@ -208,6 +215,7 @@ namespace HotelReservation
 
         private void btn_delete_Click(object sender, EventArgs e)
         {
+            //ตรวจสอบว่าได้เลือก user ที่จะลบแล้วหรือไม่
             if (comboBox_user.SelectedItem == null)
             {
                 MessageBox.Show("กรุณาเลือกบัญชีผู้ใช้งานก่อนทำการลบข้อมูล", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -217,6 +225,7 @@ namespace HotelReservation
             string selectedUsername = comboBox_user.SelectedItem.ToString();
             try
             {
+                //ค้นหาว่า user ดังกล่าวได้มีการทำรายการจองพักหรือไม่ ถ้ามี จะไม่สามารถลบข้อมูลได้ เพราะตารางข้อมูลการจองพักและข้อมูลผู้ใช้ถูกเชื่อมโยงกันและกัน
                 String query = "SELECT Reservations.reserveID FROM Reservations JOIN Users ON Reservations.reserveUserID = Users.userID WHERE Users.username = '"+selectedUsername+"'";
                 SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(query, conn);
                 DataTable dTable = new DataTable();
@@ -244,6 +253,7 @@ namespace HotelReservation
 
         private void btn_update_Click(object sender, EventArgs e)
         {
+            //ตรวจสอบว่าได้เลือกข้อมูล user ที่จะอัพเดทแล้วหรือยัง
             if(comboBox_update_user.SelectedItem == null)
             {
                 MessageBox.Show("กรุณาเลือกบัญชีผู้ใช้งานก่อนทำการเปลี่ยนแปลงข้อมูล", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -261,6 +271,7 @@ namespace HotelReservation
             bool isAdmin = checkBox_update_admin.Checked;
 
             conn.Open();
+            //อัพเดทข้อมูลไปยังฐานข้อมูลตามข้อมูลที่กรอกใหม่ โดยบันทึกไปยังข้อมูลที่มี username ตรงกันกับที่เลือก
             SqlCommand updateCmd = conn.CreateCommand();
             updateCmd.CommandText = "UPDATE Users SET password = @password, name = @name, surname = @surname, email = @email, phone = @phone, identification_no = @identification_no, address = @address, isAdmin = @isAdmin WHERE username = @username";
             updateCmd.Parameters.AddWithValue("@username", username);

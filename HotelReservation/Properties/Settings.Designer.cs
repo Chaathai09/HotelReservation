@@ -27,7 +27,7 @@ namespace HotelReservation.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
         [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\HotelDB.mdf;I" +
-            "ntegrated Security=True")]
+            "ntegrated Security=True;Integrated Security=True")]
         public string HotelDBConnection {
             get {
                 return ((string)(this["HotelDBConnection"]));

@@ -18,7 +18,7 @@ namespace HotelReservation
             InitializeComponent();
         }
 
-        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\toprn\source\repos\HotelReservation\HotelReservation\HotelDB.mdf;Integrated Security=True");
+        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\HotelDB.mdf;Integrated Security=True");
 
         private void usersBindingNavigatorSaveItem_Click(object sender, EventArgs e)
         {
@@ -40,6 +40,7 @@ namespace HotelReservation
 
         private async void btn_signup_Click(object sender, EventArgs e)
         {
+            //ตรวจว่าได้กรอกข้อมูลครบแล้วหรือยัง (เฉพาะ username และ password)
             if (string.IsNullOrEmpty(txtbox_username.Text) || 
                 string.IsNullOrEmpty(txtbox_password.Text) || 
                 string.IsNullOrEmpty(txtbox_confirm_password.Text))
@@ -49,20 +50,24 @@ namespace HotelReservation
                 return;
             }
 
+            //ตรวจสอบว่ารหัสผ่านยาวอย่างน้อย 8 ตัวอักษรแล้วหรือไม่
             if (txtbox_password.Text.Length < 8)
             {
                 MessageBox.Show("รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "Message", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            //ตรวจสอบว่ารหัสผ่านกับที่ให้ยืนยันตรงกันหรือไม่
             if (txtbox_password.Text != txtbox_confirm_password.Text)
             {
                 MessageBox.Show("รหัสผ่านยืนยันไม่ตรงกัน!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            //ตรวจว่ามี username ที่ซ้ำกันหรือไม่
             try
             {
+                //ดึงข้อมูลจากฐานข้อมูลที่มี username เดียวกันกับที่กรอก
                 String query = "SELECT * FROM Users WHERE username = '" + txtbox_username.Text + "'";
                 SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(query, conn);
                 DataTable dTable = new DataTable();
@@ -79,6 +84,7 @@ namespace HotelReservation
                 MessageBox.Show("Error");
             }
 
+            //เพิ่มข้อมูลผู้ใช้ใหม่จาก input ไปยัง database 
             IUserRepository repository = new UserRepository();
             bool result = await repository.Insert(new User()
             {

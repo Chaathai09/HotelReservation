@@ -21,7 +21,9 @@ namespace HotelReservation
             lbl_user.Text = "ยินดีต้อนรับ, คุณ " + SignInUser.instance.currentUserName;
         }
 
-        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\toprn\source\repos\HotelReservation\HotelReservation\HotelDB.mdf;Integrated Security=True");
+        SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\HotelDB.mdf;Integrated Security=True");
+
+        //สร้างชุดข้อมูลชั่วคราวเพื่อเก็บ input ของผู้ใช้ก่อนจะ commit เข้าไปยัง database
         private struct ReservationOrder
         {
             public ReservationOrder(string roomID, int cost, DateTime startDate, DateTime endDate)
@@ -39,6 +41,7 @@ namespace HotelReservation
         }
         List<ReservationOrder> orders = new List<ReservationOrder>();
 
+        //ล้างชุดข้อมูลชั่วคราว
         private void ClearOrders()
         {
             orders.Clear();
@@ -46,13 +49,15 @@ namespace HotelReservation
             lbl_total.Text = "ยอดชำระทั้งหมด : 0 บาท";
         }
 
+        //เพิ่มชุดข้อมูลชั่วคราวตาม input ของ user ซึ่งก็คือห้องและระยะเวลาที่จอง
         private void AddOrder(string roomID)
         {
             int cost = comboBox_floor.Text.ToString()[0] == '4' ? 3000 : 2000;
             DateTime startDate = calendar_checkin.SelectionRange.Start;
             DateTime endDate = calendar_checkout.SelectionRange.Start;
 
-            if (orders.Where(o => o.roomID == roomID && (startDate >= o.startDate || endDate <= o.endDate)).ToList().Count > 0)
+            //ตรวจสอบว่าห้องที่เลือกนั้นได้ทำการจองแล้วหรือยัง โดยตรวจจากวันเวลาที่เลือกไว้ว่าทับซ้อนกับการจองที่มีอยู่แล้วหรือไม่
+            if (orders.Where(o => o.roomID == roomID && ((startDate >= o.startDate || endDate >= o.startDate) && (startDate <= o.endDate || endDate <= o.endDate))).ToList().Count > 0)
             {
                 MessageBox.Show("คุณได้ทำการจองห้องนี้ในช่วงเวลาดังกล่าวแล้ว! \nกรุณาลองทำการจองใหม่อีกครั้ง", "Message", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -64,6 +69,7 @@ namespace HotelReservation
             DisplayOrders();
         }
 
+        //แสดงข้อมูลการจองจากชุดข้อมูลชั่วคราวออกมาให้เป็นข้อความที่เหมาะสม
         private void DisplayOrders()
         {
             listbox_reserved.Items.Clear();
@@ -93,6 +99,7 @@ namespace HotelReservation
             btn_room5.Enabled = true;
         }
 
+        //เปลี่ยนสถานะและชื่อของปุ่มตามชั้นที่เลือก ถ้าห้องไหนมีการจองในฐานข้อมูลแล้ว จะไม่สามารถกดปุ่มได้
         private void ChangeRoomButton(string floor)
         {
             InitializeRoomButton();
@@ -104,6 +111,8 @@ namespace HotelReservation
 
             string startDate = calendar_checkin.SelectionRange.Start.ToShortDateString();
             string endDate = calendar_checkout.SelectionRange.Start.ToShortDateString();
+
+            //จากฐานข้อมูลการจอง ค้นหาห้องที่มีการจองในช่วงเวลาที่เลือก ถ้าพบเจอ ให้ปิดปุ่มประจำห้องนั้น
             String room_query = "SELECT * FROM Reservations WHERE ('"+startDate+"' >= startDate OR '"+endDate+"' >= startDate) AND ('"+startDate+"' <= endDate OR '"+endDate+"' <= endDate)";
             SqlCommand command = new SqlCommand(room_query, conn);
             conn.Open();
@@ -193,6 +202,7 @@ namespace HotelReservation
 
         private async void btn_submit_Click_1(object sender, EventArgs e)
         {
+            //ตรวจสอบว่ามีรายการจองในชุดข้อมูลชั่วคราวหรือไม่
             int totalOrder = orders.Count;
             if(totalOrder == 0)
             {
@@ -200,6 +210,7 @@ namespace HotelReservation
                 return;
             }
 
+            //แปลงชุดข้อมูลชั่วคราวให้เป็นข้อมูลที่พร้อม commit เข้าไปในฐานข้อมูล
             bool reserveStatus = false;
             foreach (ReservationOrder order in orders)
             {
@@ -218,7 +229,7 @@ namespace HotelReservation
                 }
                 reserveStatus = true;
             }
-            if (reserveStatus)
+            if (reserveStatus) //สรุปยอดค่าใช้จ่ายและการทำรายการทั้งหมด
             {
                 MessageBox.Show("ทำการจองเสร็จสิ้น!\nรายการจองทั้งหมด " + totalOrder.ToString() + " ครั้ง\n" + lbl_total.Text.ToString(), "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
 

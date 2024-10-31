@@ -9,12 +9,15 @@ using Dapper;
 
 namespace HotelReservation
 {
+    //Class ช่วยสำหรับการเพิ่มข้อมูลผู้ใช้งานโดยไม่ต้องเขียนโค้ดหลายรอบ
     public class UserRepository : IUserRepository
     {
         public async Task<bool> Insert(User user)
         {
+            //เชื่อมต่อกับฐานข้อมูล
             using (IDbConnection db = new SqlConnection(AppHelper.ConnectionString))
             {
+                //ใช้ SQL command ที่บันทึกไว้ใน properties ของ solution แทนการเขียนตรง ๆ ผ่านโค้ด
                 var result = await db.ExecuteAsync(HotelReservation.Properties.Resources.InsertUser, new
                 {
                     username = user.Username,
