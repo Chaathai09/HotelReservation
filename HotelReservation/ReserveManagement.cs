@@ -232,8 +232,8 @@ namespace HotelReservation
                 return;
             }
 
-            int reserveID = Int32.Parse(comboBox_reserveID.SelectedItem.ToString());
-            int userID = users.Find(u => u.fullName == comboBox_user.SelectedItem.ToString()).userID;
+            int reserveID = Int32.Parse(comboBox_update_reserveID.SelectedItem.ToString());
+            int userID = users.Find(u => u.fullName == comboBox_update_user.SelectedItem.ToString()).userID;
             int roomID = Int32.Parse(comboBox_update_room.SelectedItem.ToString());
             string startDate = datePicker_update_checkin.Value.ToShortDateString();
             string endDate = datePicker_update_checkout.Value.ToShortDateString();
@@ -241,7 +241,7 @@ namespace HotelReservation
             //ตรวจสอบว่าข้อมูลที่อัพเดทของแต่ละรายการจองพัก ทับซ้อนกับข้อมูลที่มีอยู่หรือไม่
             try
             {
-                String query = "SELECT * FROM Reservations WHERE reserveRoomID = '" + comboBox_room.SelectedItem.ToString() + "' AND startDate <= '" + startDate + "' AND endDate >= '" + endDate + "'";
+                String query = "SELECT * FROM Reservations WHERE reserveRoomID = '" + comboBox_update_reserveID.SelectedItem.ToString() + "' AND startDate <= '" + startDate + "' AND endDate >= '" + endDate + "'";
                 SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(query, conn);
                 DataTable dTable = new DataTable();
                 sqlDataAdapter.Fill(dTable);
@@ -279,6 +279,8 @@ namespace HotelReservation
             int reserveID = Int32.Parse(comboBox_update_reserveID.SelectedItem.ToString());
             int currentUser = 0;
             int currentRoom = 0;
+            DateTime currentCheckin = DateTime.Now;
+            DateTime currentCheckout   = DateTime.Now;
 
             //ดึงข้อมูลอื่น ๆ ที่เป็น field เดียวกับรายการจองนั้นจากฐานข้อมูลและนำมาแสดงให้ตรงกัน
             String reserve_query = "SELECT * FROM Reservations WHERE reserveID = '"+reserveID+"'";
@@ -289,13 +291,17 @@ namespace HotelReservation
                 while (reader.Read())
                 {
                     currentUser = Int32.Parse(reader["reserveUserID"].ToString());
-                    currentRoom = Int32.Parse(reader["reserveRoomID"].ToString()) ;
+                    currentRoom = Int32.Parse(reader["reserveRoomID"].ToString());
+                    currentCheckin = DateTime.Parse(reader["startDate"].ToString());
+                    currentCheckout = DateTime.Parse(reader["endDate"].ToString());
                 }
                 conn.Close();
             }
 
             comboBox_update_user.Text = users.Find(u => u.userID == currentUser).fullName;
             comboBox_update_room.Text = currentRoom.ToString();
+            datePicker_update_checkin.Value = currentCheckin;
+            datePicker_update_checkout.Value = currentCheckout;
         }
 
         private void btn_home_Click(object sender, EventArgs e)
